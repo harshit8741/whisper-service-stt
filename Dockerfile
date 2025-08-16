@@ -20,9 +20,6 @@ COPY requirements.txt /app/requirements.txt
 # Install Python dependencies (make sure numpy is there)
 RUN pip install --no-cache-dir -r requirements.txt
 
-# OPTIONAL: Pre-download the Whisper model (comment this if Railway builds timeout)
-# RUN python3 -c "import whisper; whisper.load_model('base')"
-
 # Copy the FastAPI application
 COPY main.py /app/main.py
 
