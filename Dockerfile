@@ -8,25 +8,26 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y \
     ffmpeg \
     git \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Upgrade pip and install Python dependencies
+# Upgrade pip
 RUN pip install --no-cache-dir --upgrade pip
 
 # Copy requirements file
 COPY requirements.txt /app/requirements.txt
 
-# Install Python dependencies
+# Install Python dependencies (make sure numpy is there)
 RUN pip install --no-cache-dir -r requirements.txt
+
+# OPTIONAL: Pre-download the Whisper model (comment this if Railway builds timeout)
+# RUN python3 -c "import whisper; whisper.load_model('base')"
 
 # Copy the FastAPI application
 COPY main.py /app/main.py
 
-# Pre-download the Whisper model to avoid first-run delays
-RUN python3 -c "import whisper; whisper.load_model('base')"
-
-# Expose the port that FastAPI will run on
+# Expose FastAPI port
 EXPOSE 8000
 
-# Set the command to run the FastAPI application
+# Start FastAPI with uvicorn
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
